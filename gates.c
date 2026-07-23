@@ -93,12 +93,9 @@ int main() {
 // ========================================
 
 /**
-AND GATE;
-Y = A.B;
-0 0-> 0;
-0 1-> 0;
-1 0-> 0;
-1 1-> 1;
+Gate: AND;
+Expression: Y = A.B;
+Truth Table: 0 0 -> 0 | 0 1 -> 0 | 1 0 -> 0 | 1 1 -> 1
 */
 
 int AND(int a, int b) { return a & b; }
@@ -106,13 +103,11 @@ int AND(int a, int b) { return a & b; }
 // ========================================
 
 /**
-OR GATE;
-Y = A + B;
-0 0-> 0;
-0 1-> 1;
-1 0-> 1;
-1 1-> 1;
+Gate: OR;
+Expression: Y = A + B;
+Truth Table: 0 0 -> 0 | 0 1 -> 1 | 1 0 -> 1 | 1 1 -> 1
 */
+
 int OR(int a, int b) { return a || b; }
 
 // ========================================
@@ -122,6 +117,12 @@ NOT GATE;
 Y = A’;
 0 -> 1;
 1 -> 0;
+*/
+
+/**
+Gate: XNOR;
+Expression: Y = A';
+Truth Table: 0 -> 1 | 1 -> 0
 */
 
 int NOT(int a) { return !a; }
@@ -137,28 +138,30 @@ Y = (A + B)’;
 1 1-> 0;
 */
 
+/**
+Gate: NOR;
+Expression: Y = (A + B)’;
+Truth Table: 0 0-> 1 | 0 1-> 0 | 1 0-> 0 | 1 1-> 0
+*/
+
 int NOR(int a, int b) { return !OR(a, b); }
 
 // ========================================
 
 /**
-NAND GATE;
-Y = (A.B)’;
-0 0-> 1;
-0 1-> 1;
-1 0-> 1;
-1 1-> 0;
+Gate: NAND;
+Expression:Y = (A.B)’;
+Truth Table: 0 0-> 1 | 0 1-> 1 | 1 0-> 1 | 1 1-> 0
 */
 
 int NAND(int a, int b) { return !AND(a, b); }
 
+// ========================================
+
 /**
-XOR GATE;
-Y = A’B + AB’;
-0 0-> 0;
-0 1-> 1;
-1 0-> 1;
-1 1-> 0;
+Gate: XOR;
+Expression: Y = A’B + AB’;
+Truth Table: 0 0-> 0 | 0 1-> 1| 1 0-> 1 | 1 1-> 0
 */
 
 int XOR(int a, int b) {
@@ -167,10 +170,12 @@ int XOR(int a, int b) {
   return OR(x, y);
 }
 
+// ========================================
+
 /**
 Gate: XNOR;
 Expression: Y = AB + A’B’;
-Truth Table: 0 0-> 1 | 0 1-> 0 | 1 0-> 0 | 1 1-> 1
+Truth Table: 0 0 -> 1 | 0 1 -> 0 | 1 0 -> 0 | 1 1 -> 1
 */
 
 int XNOR(int a, int b) {
@@ -178,3 +183,5 @@ int XNOR(int a, int b) {
   int y = AND(!a, !b);
   return OR(x, y);
 }
+
+// ========================================
