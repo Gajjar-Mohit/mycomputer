@@ -1,5 +1,6 @@
-#include <stdio.h>
+#include "adder.h"
 #include "gates.h"
+#include <stdio.h>
 
 int main() {
   printf("========================================\n");
@@ -76,6 +77,31 @@ int main() {
   printf("0 1 -> %d\n", output2);
   printf("1 0 -> %d\n", output3);
   printf("1 1 -> %d\n", output4);
+
+  printf("========================================\n");
+  printf("Testing HALF-ADDER Circuit\n");
+
+  int sum1;
+  int carry1;
+  HALF_ADDER(0, 0, &sum1, &carry1);
+
+  int sum2;
+  int carry2;
+  HALF_ADDER(0, 1, &sum2, &carry2);
+
+  int sum3;
+  int carry3;
+  HALF_ADDER(1, 0, &sum3, &carry3);
+
+  int sum4;
+  int carry4;
+  HALF_ADDER(1, 1, &sum4, &carry4);
+
+  printf("A | B | Carry | Sum\n");
+  printf("0   0     %d      %d\n", carry1, sum1);
+  printf("0   1     %d      %d\n", carry2, sum2);
+  printf("1   0     %d      %d\n", carry3, sum3);
+  printf("1   1     %d      %d\n", carry4, sum4);
 
   printf("========================================\n");
 
