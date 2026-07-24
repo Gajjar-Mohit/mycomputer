@@ -1,5 +1,6 @@
 #include "adder.h"
 #include "gates.h"
+#include "substractor.h"
 #include <stdio.h>
 
 int main() {
@@ -135,6 +136,27 @@ int main() {
   full_adder_output = FULL_ADDER(1, 1, 1);
   printf("1   1   1     %d      %d\n", full_adder_output.carry,
          full_adder_output.sum);
+
+  printf("========================================\n");
+  printf("Testing HALF-SUBSTRACTOR Circuit\n");
+
+  printf("A | B | Borrow | Substraction\n");
+  HalfSubstractorOutput half_substractor_output;
+  half_substractor_output = HALF_SUBSTRACTOR(0, 0);
+  printf("0   0     %d          %d\n", half_substractor_output.borrow,
+         half_substractor_output.substraction);
+
+  half_substractor_output = HALF_SUBSTRACTOR(0, 1);
+  printf("0   1     %d          %d\n", half_substractor_output.borrow,
+         half_substractor_output.substraction);
+
+  half_substractor_output = HALF_SUBSTRACTOR(1, 0);
+  printf("1   0     %d          %d\n", half_substractor_output.borrow,
+         half_substractor_output.substraction);
+
+  half_substractor_output = HALF_SUBSTRACTOR(1, 1);
+  printf("1   1     %d          %d\n", half_substractor_output.borrow,
+         half_substractor_output.substraction);
 
   printf("========================================\n");
 
