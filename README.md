@@ -10,7 +10,7 @@
 
 ## Abstract & Technical Overview
 
-This repository provides a structural, first-principles implementation of a **digital logic simulator** and **computer architecture framework** written in standard ANSI C. The system models physical semiconductor logic components by synthesizing primitive Boolean logic gates ($\text{AND}, \text{OR}, \text{NOT}, \text{NAND}, \text{NOR}, \text{XOR}, \text{XNOR}$) into complex **combinational** and **sequential digital circuits**.
+This repository provides a structural, first-principles implementation of a **digital logic simulator** and **computer architecture framework** written in standard ANSI C. The system models physical semiconductor logic components by synthesizing primitive Boolean logic gates into complex **combinational** and **sequential digital circuits**.
 
 Engineered for academic research, digital design education, and low-level hardware design simulation, the architecture features:
 * **Combinational Logic Circuits**: Binary Adders, Subtractors, Data Multiplexers ($\text{MUX}$), and Demultiplexers ($\text{DEMUX}$).
@@ -67,65 +67,82 @@ Processing single-bit binary signals $A, B \in \{0, 1\}$:
 
 ### 2. Combinational Arithmetic Circuits
 
-#### Half-Adder ($\text{HA}$) & Full-Adder ($\text{FA}$)
+#### Half-Adder ($\text{HA}$)
 
-$$\begin{aligned}
-\text{HA: } S &= A \oplus B, \quad C_{out} = A \cdot B \\
-\text{FA: } S &= A \oplus B \oplus C_{in}, \quad C_{out} = (A \cdot B) + (C_{in} \cdot (A \oplus B))
-\end{aligned}$$
+$$S = A \oplus B$$
 
-#### Half-Subtractor ($\text{HS}$) & Full-Subtractor ($\text{FS}$)
+$$C_{\text{out}} = A \cdot B$$
 
-$$\begin{aligned}
-\text{HS: } D &= A \oplus B, \quad B_{out} = \overline{A} \cdot B \\
-\text{FS: } D &= A \oplus B \oplus B_{in}, \quad B_{out} = (\overline{A} \cdot B) + (\overline{A \oplus B} \cdot B_{in})
-\end{aligned}$$
+#### Full-Adder ($\text{FA}$)
+
+$$S = A \oplus B \oplus C_{\text{in}}$$
+
+$$C_{\text{out}} = (A \cdot B) + (C_{\text{in}} \cdot (A \oplus B))$$
+
+#### Half-Subtractor ($\text{HS}$)
+
+$$D = A \oplus B$$
+
+$$B_{\text{out}} = \overline{A} \cdot B$$
+
+#### Full-Subtractor ($\text{FS}$)
+
+$$D = A \oplus B \oplus B_{\text{in}}$$
+
+$$B_{\text{out}} = (\overline{A} \cdot B) + (\overline{A \oplus B} \cdot B_{\text{in}})$$
 
 ---
 
 ### 3. Data Routing Circuits (Multiplexers & Demultiplexers)
 
-#### $2\times1$ & $4\times1$ Multiplexers ($\text{MUX}$)
-$$\begin{aligned}
-\text{MUX}_{2\times1}: Y &= (\overline{S_0} \cdot I_1) + (S_0 \cdot I_2) \\
-\text{MUX}_{4\times1}: Y &= (\overline{S_0}\cdot\overline{S_1}\cdot I_1) + (S_0\cdot\overline{S_1}\cdot I_2) + (\overline{S_0}\cdot S_1\cdot I_3) + (S_0\cdot S_1\cdot I_4)
-\end{aligned}$$
+#### $2\times1$ Multiplexer ($\text{MUX}_{2\times1}$)
 
-#### $1\times2$ & $1\times4$ Demultiplexers ($\text{DEMUX}$)
-$$\begin{aligned}
-\text{DEMUX}_{1\times2}: O_1 &= \overline{S_0} \cdot I, \quad O_2 = S_0 \cdot I \\
-\text{DEMUX}_{1\times4}: O_1 &= \overline{S_0}\cdot\overline{S_1}\cdot I, \quad O_2 = S_0\cdot\overline{S_1}\cdot I, \quad O_3 = \overline{S_0}\cdot S_1\cdot I, \quad O_4 = S_0\cdot S_1\cdot I
-\end{aligned}$$
+$$Y = (\overline{S_0} \cdot I_1) + (S_0 \cdot I_2)$$
+
+#### $4\times1$ Multiplexer ($\text{MUX}_{4\times1}$)
+
+$$Y = (\overline{S_0} \cdot \overline{S_1} \cdot I_1) + (S_0 \cdot \overline{S_1} \cdot I_2) + (\overline{S_0} \cdot S_1 \cdot I_3) + (S_0 \cdot S_1 \cdot I_4)$$
+
+#### $1\times2$ Demultiplexer ($\text{DEMUX}_{1\times2}$)
+
+$$O_1 = \overline{S_0} \cdot I, \quad O_2 = S_0 \cdot I$$
+
+#### $1\times4$ Demultiplexer ($\text{DEMUX}_{1\times4}$)
+
+$$O_1 = \overline{S_0}\cdot\overline{S_1}\cdot I, \quad O_2 = S_0\cdot\overline{S_1}\cdot I, \quad O_3 = \overline{S_0}\cdot S_1\cdot I, \quad O_4 = S_0\cdot S_1\cdot I$$
 
 ---
 
 ### 4. Sequential Memory Elements (Latches & Flip-Flops)
 
 #### Active-Low NAND SR Latch
-Feedback-stabilized bistable multivibrator evaluating active-low inputs $\overline{S}, \overline{R}$:
-$$\begin{aligned}
-Q &= \text{NAND}(\overline{S}, \overline{Q}) \\
-\overline{Q} &= \text{NAND}(\overline{R}, Q)
-\end{aligned}$$
+Feedback-stabilized bistable multivibrator evaluating active-low inputs $\overline{S}$ and $\overline{R}$:
+
+$$Q = \text{NAND}(\overline{S}, \overline{Q})$$
+
+$$\overline{Q} = \text{NAND}(\overline{R}, Q)$$
 
 #### Gated SR Flip-Flop
 Synchronized by clock enable signal $\text{CLK}$:
-$$S' = \text{NAND}(S, \text{CLK}), \quad R' = \text{NAND}(R, \text{CLK})$$
+
+$$S' = \text{NAND}(S, \text{CLK})$$
+
+$$R' = \text{NAND}(R, \text{CLK})$$
 
 #### JK Flip-Flop (Toggle-Capable Memory)
 Eliminates invalid states by steering inputs using current state feedback $Q$ and $\overline{Q}$:
-$$\begin{aligned}
-S' &= \text{NAND}(\text{AND}(J, \text{CLK}), \overline{Q}_{prev}) \\
-R' &= \text{NAND}(\text{AND}(K, \text{CLK}), Q_{prev})
-\end{aligned}$$
 
-| State Transition | $J$ | $K$ | $\text{CLK}$ | $Q_{next}$ | Characteristic Operation |
+$$S' = \text{NAND}(\text{AND}(J, \text{CLK}), \overline{Q}_{\text{prev}})$$
+
+$$R' = \text{NAND}(\text{AND}(K, \text{CLK}), Q_{\text{prev}})$$
+
+| State Transition | $J$ | $K$ | $\text{CLK}$ | $Q_{\text{next}}$ | Characteristic Operation |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **Clock Off** | $X$ | $X$ | $0$ | $Q_{prev}$ | Memory Hold |
-| **No Change** | $0$ | $0$ | $1$ | $Q_{prev}$ | Memory Hold |
+| **Clock Off** | $X$ | $X$ | $0$ | $Q_{\text{prev}}$ | Memory Hold |
+| **No Change** | $0$ | $0$ | $1$ | $Q_{\text{prev}}$ | Memory Hold |
 | **Reset** | $0$ | $1$ | $1$ | $0$ | Reset State ($Q=0$) |
 | **Set** | $1$ | $0$ | $1$ | $1$ | Set State ($Q=1$) |
-| **Toggle** | $1$ | $1$ | $1$ | $\overline{Q}_{prev}$ | State Inversion (Toggle) |
+| **Toggle** | $1$ | $1$ | $1$ | $\overline{Q}_{\text{prev}}$ | State Inversion (Toggle) |
 
 ---
 
@@ -133,7 +150,7 @@ R' &= \text{NAND}(\text{AND}(K, \text{CLK}), Q_{prev})
 
 ```text
 .
-├── README.md         # Comprehensive academic & SEO project documentation
+├── README.md         # Technical & academic project documentation
 ├── main.c            # Test suite execution harness and ASCII renderer
 ├── gates.h / .c      # Primitive Boolean logic gate evaluations
 ├── adder.h / .c      # Half-Adder and Full-Adder circuit implementations
