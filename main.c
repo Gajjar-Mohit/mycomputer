@@ -1,10 +1,11 @@
-#include <stdio.h>
 #include "adder.h"
-#include "gates.h"
 #include "demultiplexer.h"
 #include "flipflops.h"
+#include "gates.h"
+#include "latchs.h"
 #include "multiplexer.h"
 #include "substractor.h"
+#include <stdio.h>
 
 void test_gates(void) {
   printf("==================================================\n");
@@ -121,7 +122,8 @@ void test_subtractors(void) {
   for (int a = 0; a <= 1; a++) {
     for (int b = 0; b <= 1; b++) {
       HalfSubstractorOutput out = HALF_SUBSTRACTOR(a, b);
-      printf(" %d | %d |   %d    |      %d\n", a, b, out.borrow, out.substraction);
+      printf(" %d | %d |   %d    |      %d\n", a, b, out.borrow,
+             out.substraction);
     }
   }
   printf("\n");
@@ -133,7 +135,8 @@ void test_subtractors(void) {
     for (int b = 0; b <= 1; b++) {
       for (int c = 0; c <= 1; c++) {
         FullSubstractorOutput out = FULL_SUBSTRACTOR(a, b, c);
-        printf(" %d | %d | %d |   %d    |      %d\n", a, b, c, out.borrow, out.substraction);
+        printf(" %d | %d | %d |   %d    |      %d\n", a, b, c, out.borrow,
+               out.substraction);
       }
     }
   }
@@ -150,11 +153,14 @@ void test_multiplexers(void) {
   printf("----+----+----+--------\n");
   int i1_2 = 1, i2_2 = 0;
   for (int s0 = 0; s0 <= 1; s0++) {
-    printf("  %d |  %d |  %d |   %d\n", i1_2, i2_2, s0, MUX_2X1(i1_2, i2_2, s0));
+    printf("  %d |  %d |  %d |   %d\n", i1_2, i2_2, s0,
+           MUX_2X1(i1_2, i2_2, s0));
   }
-  i1_2 = 0; i2_2 = 1;
+  i1_2 = 0;
+  i2_2 = 1;
   for (int s0 = 0; s0 <= 1; s0++) {
-    printf("  %d |  %d |  %d |   %d\n", i1_2, i2_2, s0, MUX_2X1(i1_2, i2_2, s0));
+    printf("  %d |  %d |  %d |   %d\n", i1_2, i2_2, s0,
+           MUX_2X1(i1_2, i2_2, s0));
   }
   printf("\n");
 
@@ -164,8 +170,8 @@ void test_multiplexers(void) {
   int i1 = 1, i2 = 0, i3 = 1, i4 = 0;
   for (int s1 = 0; s1 <= 1; s1++) {
     for (int s0 = 0; s0 <= 1; s0++) {
-      printf("  %d |  %d |  %d |  %d |  %d |  %d |   %d\n",
-             i1, i2, i3, i4, s0, s1, MUX_4X1(i1, i2, i3, i4, s0, s1));
+      printf("  %d |  %d |  %d |  %d |  %d |  %d |   %d\n", i1, i2, i3, i4, s0,
+             s1, MUX_4X1(i1, i2, i3, i4, s0, s1));
     }
   }
   printf("\n");
@@ -208,7 +214,7 @@ void test_flipflops(void) {
   printf(" S | R | Qn | Qn_bar | State Description\n");
   printf("---+---+----+--------+-------------------\n");
 
-  SRLatchOutput out = SRLATCH(0, 1);
+  LatchOutput out = SRLATCH(0, 1);
   printf(" 0 | 1 |  %d |   %d    | Set (Q=1)\n", out.Qn, out.Qn_1);
 
   out = SRLATCH(1, 1);
@@ -222,6 +228,56 @@ void test_flipflops(void) {
 
   out = SRLATCH(0, 0);
   printf(" 0 | 0 |  %d |   %d    | Invalid (Forbidden)\n", out.Qn, out.Qn_1);
+
+  printf("\n");
+
+  printf("--- SR FLIP-FLOP (Gated Clock) ---\n");
+  printf(" CLK | S | R | Qn | Qn_bar | State Description\n");
+  printf("-----+---+---+----+--------+-------------------\n");
+
+  FlipFlopOutput ff_out = SRFLIPFLOP(1, 0, 0);
+  printf("  0  | 1 | 0 |  %d |   %d    | Clock Off (Holds state)\n", ff_out.Qn,
+         ff_out.Qn_1);
+
+  ff_out = SRFLIPFLOP(1, 0, 1);
+  printf("  1  | 1 | 0 |  %d |   %d    | Set (Q=1)\n", ff_out.Qn, ff_out.Qn_1);
+
+  ff_out = SRFLIPFLOP(0, 0, 1);
+  printf("  1  | 0 | 0 |  %d |   %d    | Hold (Retains Q=1)\n", ff_out.Qn,
+         ff_out.Qn_1);
+
+  ff_out = SRFLIPFLOP(0, 1, 1);
+  printf("  1  | 0 | 1 |  %d |   %d    | Reset (Q=0)\n", ff_out.Qn,
+         ff_out.Qn_1);
+
+  ff_out = SRFLIPFLOP(0, 0, 1);
+  printf("  1  | 0 | 0 |  %d |   %d    | Hold (Retains Q=0)\n", ff_out.Qn,
+         ff_out.Qn_1);
+
+  ff_out = SRFLIPFLOP(1, 1, 1);
+  printf("  1  | 1 | 1 |  %d |   %d    | Invalid (Forbidden)\n", ff_out.Qn,
+         ff_out.Qn_1);
+
+  printf("\n");
+
+  printf("--- JK FLIP-FLOP ---\n");
+  printf(" CLK | J | K | Qn | Qn_bar | State Description\n");
+  printf("-----+---+---+----+--------+-------------------\n");
+
+  FlipFlopOutput jk_out = JKFLIPFLOP(1, 0, 0);
+  printf("  0  | 1 | 0 |  %d |   %d    | Clock Off\n", jk_out.Qn, jk_out.Qn_1);
+
+  jk_out = JKFLIPFLOP(0, 0, 1);
+  printf("  1  | 0 | 0 |  %d |   %d    | Hold\n", jk_out.Qn, jk_out.Qn_1);
+
+  jk_out = JKFLIPFLOP(1, 0, 1);
+  printf("  1  | 1 | 0 |  %d |   %d    | Set (Q=1)\n", jk_out.Qn, jk_out.Qn_1);
+
+  jk_out = JKFLIPFLOP(0, 1, 1);
+  printf("  1  | 0 | 1 |  %d |   %d    | Reset (Q=0)\n", jk_out.Qn, jk_out.Qn_1);
+
+  jk_out = JKFLIPFLOP(1, 1, 1);
+  printf("  1  | 1 | 1 |  %d |   %d    | Toggle\n", jk_out.Qn, jk_out.Qn_1);
 
   printf("\n");
 }

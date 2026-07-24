@@ -1,11 +1,11 @@
-#ifndef FLIPFLOPS_H
-#define FLIPFLOPS_H
+#ifndef FLIPFLOPS
+#define FLIPFLOPS
 
 typedef struct {
-  int Qn;    // Q output
-  int Qn_1;  // Q_bar output
-} SRLatchOutput;
+  int Qn, Qn_1;
+} FlipFlopOutput;
 
-SRLatchOutput SRLATCH(int s, int r);
+FlipFlopOutput SRFLIPFLOP(int s, int r, int clk);
+FlipFlopOutput JKFLIPFLOP(int j, int k, int clk);
 
 #endif
