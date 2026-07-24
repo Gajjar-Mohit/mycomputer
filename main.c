@@ -2,6 +2,7 @@
 #include "adder.h"
 #include "gates.h"
 #include "demultiplexer.h"
+#include "flipflops.h"
 #include "multiplexer.h"
 #include "substractor.h"
 
@@ -198,12 +199,40 @@ void test_demultiplexers(void) {
   printf("\n");
 }
 
+void test_flipflops(void) {
+  printf("==================================================\n");
+  printf("             FLIP-FLOPS / LATCHES TEST            \n");
+  printf("==================================================\n\n");
+
+  printf("--- SR LATCH (NAND Active-Low) ---\n");
+  printf(" S | R | Qn | Qn_bar | State Description\n");
+  printf("---+---+----+--------+-------------------\n");
+
+  SRLatchOutput out = SRLATCH(0, 1);
+  printf(" 0 | 1 |  %d |   %d    | Set (Q=1)\n", out.Qn, out.Qn_1);
+
+  out = SRLATCH(1, 1);
+  printf(" 1 | 1 |  %d |   %d    | Hold (Retains Q=1)\n", out.Qn, out.Qn_1);
+
+  out = SRLATCH(1, 0);
+  printf(" 1 | 0 |  %d |   %d    | Reset (Q=0)\n", out.Qn, out.Qn_1);
+
+  out = SRLATCH(1, 1);
+  printf(" 1 | 1 |  %d |   %d    | Hold (Retains Q=0)\n", out.Qn, out.Qn_1);
+
+  out = SRLATCH(0, 0);
+  printf(" 0 | 0 |  %d |   %d    | Invalid (Forbidden)\n", out.Qn, out.Qn_1);
+
+  printf("\n");
+}
+
 int main() {
   test_gates();
   test_adders();
   test_subtractors();
   test_multiplexers();
   test_demultiplexers();
+  test_flipflops();
 
   return 0;
 }
