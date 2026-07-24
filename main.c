@@ -82,18 +82,59 @@ int main() {
   printf("Testing HALF-ADDER Circuit\n");
 
   printf("A | B | Carry | Sum\n");
-  HalfAdderOutput output;
-  output = HALF_ADDER(0, 0);
-  printf("0   0     %d      %d\n", output.sum, output.carry);
+  HalfAdderOutput half_adder_output;
+  half_adder_output = HALF_ADDER(0, 0);
+  printf("0   0     %d      %d\n", half_adder_output.sum,
+         half_adder_output.carry);
 
-  output = HALF_ADDER(0, 1);
-  printf("0   1     %d      %d\n", output.sum, output.carry);
+  half_adder_output = HALF_ADDER(0, 1);
+  printf("0   1     %d      %d\n", half_adder_output.sum,
+         half_adder_output.carry);
 
-  output = HALF_ADDER(1, 0);
-  printf("1   0     %d      %d\n", output.sum, output.carry);
+  half_adder_output = HALF_ADDER(1, 0);
+  printf("1   0     %d      %d\n", half_adder_output.sum,
+         half_adder_output.carry);
 
-  output = HALF_ADDER(1, 1);
-  printf("1   1     %d      %d\n", output.sum, output.carry);
+  half_adder_output = HALF_ADDER(1, 1);
+  printf("1   1     %d      %d\n", half_adder_output.sum,
+         half_adder_output.carry);
+
+  printf("========================================\n");
+  printf("Testing FULL-ADDER Circuit\n");
+
+  printf("A | B | C | Carry | Sum\n");
+  FullAdderOutput full_adder_output;
+  full_adder_output = FULL_ADDER(0, 0, 0);
+  printf("0   0   0     %d      %d\n", full_adder_output.carry,
+         full_adder_output.sum);
+
+  full_adder_output = FULL_ADDER(0, 0, 1);
+  printf("0   0   1     %d      %d\n", full_adder_output.carry,
+         full_adder_output.sum);
+
+  full_adder_output = FULL_ADDER(0, 1, 0);
+  printf("0   1   0     %d      %d\n", full_adder_output.carry,
+         full_adder_output.sum);
+
+  full_adder_output = FULL_ADDER(0, 1, 1);
+  printf("0   1   1     %d      %d\n", full_adder_output.carry,
+         full_adder_output.sum);
+
+  full_adder_output = FULL_ADDER(1, 0, 0);
+  printf("1   0   0     %d      %d\n", full_adder_output.carry,
+         full_adder_output.sum);
+
+  full_adder_output = FULL_ADDER(1, 0, 1);
+  printf("1   0   1     %d      %d\n", full_adder_output.carry,
+         full_adder_output.carry);
+
+  full_adder_output = FULL_ADDER(1, 1, 0);
+  printf("1   1   0     %d      %d\n", full_adder_output.carry,
+         full_adder_output.sum);
+
+  full_adder_output = FULL_ADDER(1, 1, 1);
+  printf("1   1   1     %d      %d\n", full_adder_output.carry,
+         full_adder_output.sum);
 
   printf("========================================\n");
 
