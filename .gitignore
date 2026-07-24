@@ -1,0 +1,20 @@
+# Compiled object files
+*.o
+*.obj
+
+# Dynamic & Static libraries / Archives
+*.a
+*.so
+*.dylib
+*.dll
+
+# Executables & build artifacts
+main
+*.out
+*.exe
+*.dSYM/
+
+# OS & IDE artifacts
+.DS_Store
+.vscode/
+.idea/
