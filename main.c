@@ -159,6 +159,43 @@ int main() {
          half_substractor_output.substraction);
 
   printf("========================================\n");
+  printf("Testing FULL-SUBSTRACTOR Circuit\n");
+
+  printf("A | B | C | Borrow | Substraction\n");
+  FullSubstractorOutput full_substractor_output;
+  full_substractor_output = FULL_SUBSTRACTOR(0, 0, 0);
+  printf("0   0   0     %d          %d\n", full_substractor_output.borrow,
+         full_substractor_output.substraction);
+
+  full_substractor_output = FULL_SUBSTRACTOR(0, 0, 1);
+  printf("0   0   1     %d          %d\n", full_substractor_output.borrow,
+         full_substractor_output.substraction);
+
+  full_substractor_output = FULL_SUBSTRACTOR(0, 1, 0);
+  printf("0   1   0     %d          %d\n", full_substractor_output.borrow,
+         full_substractor_output.substraction);
+
+  full_substractor_output = FULL_SUBSTRACTOR(0, 1, 1);
+  printf("0   1   1     %d          %d\n", full_substractor_output.borrow,
+         full_substractor_output.substraction);
+
+  full_substractor_output = FULL_SUBSTRACTOR(1, 0, 0);
+  printf("1   0   0     %d          %d\n", full_substractor_output.borrow,
+         full_substractor_output.substraction);
+
+  full_substractor_output = FULL_SUBSTRACTOR(1, 0, 1);
+  printf("1   0   1     %d          %d\n", full_substractor_output.borrow,
+         full_substractor_output.substraction);
+
+  full_substractor_output = FULL_SUBSTRACTOR(1, 1, 0);
+  printf("1   1   0     %d          %d\n", full_substractor_output.borrow,
+         full_substractor_output.substraction);
+
+  full_substractor_output = FULL_SUBSTRACTOR(1, 1, 1);
+  printf("1   1   1     %d          %d\n", full_substractor_output.borrow,
+         full_substractor_output.substraction);
+
+  printf("========================================\n");
 
   return 0;
 }
