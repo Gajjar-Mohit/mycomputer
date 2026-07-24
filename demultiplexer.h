@@ -14,6 +14,6 @@ typedef struct {
   int o1, o2;
 } Demux1x2Output;
 
-Demux1x2Output MUX_2X1(int i, int s0);
+Demux1x2Output DEMUX_1X2(int i, int s0);
 
 #endif

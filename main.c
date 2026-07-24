@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "adder.h"
 #include "gates.h"
+#include "demultiplexer.h"
 #include "multiplexer.h"
 #include "substractor.h"
 
@@ -169,11 +170,40 @@ void test_multiplexers(void) {
   printf("\n");
 }
 
+void test_demultiplexers(void) {
+  printf("==================================================\n");
+  printf("           DEMULTIPLEXER CIRCUITS TEST            \n");
+  printf("==================================================\n\n");
+
+  printf("--- 1 X 2 DEMUX Circuit ---\n");
+  printf(" I | S0 | O1 | O2\n");
+  printf("---+----+----+----\n");
+  int input = 1;
+  for (int s0 = 0; s0 <= 1; s0++) {
+    Demux1x2Output out = DEMUX_1X2(input, s0);
+    printf(" %d |  %d |  %d |  %d\n", input, s0, out.o1, out.o2);
+  }
+  printf("\n");
+
+  printf("--- 1 X 4 DEMUX Circuit ---\n");
+  printf(" I | S0 | S1 | O1 | O2 | O3 | O4\n");
+  printf("---+----+----+----+----+----+----\n");
+  for (int s1 = 0; s1 <= 1; s1++) {
+    for (int s0 = 0; s0 <= 1; s0++) {
+      Demux1x4Output out = DEMUX_1X4(input, 0, 0, 0, 0, s0, s1);
+      printf(" %d |  %d |  %d |  %d |  %d |  %d |  %d\n", input, s0, s1, out.o1,
+             out.o2, out.o3, out.o4);
+    }
+  }
+  printf("\n");
+}
+
 int main() {
   test_gates();
   test_adders();
   test_subtractors();
   test_multiplexers();
+  test_demultiplexers();
 
   return 0;
 }
