@@ -1,22 +1,29 @@
-# Logic Gate & Combinational Circuit Simulation Framework
+# Digital Logic Circuit Simulation & Hardware Emulator in C
 
-> **An Academic C Implementation of Discrete Digital Logic Synthesis, Gate-Level Building Blocks, and Combinational Computer Architecture Units.**
+[![C Standard](https://img.shields.io/badge/C-C99%2FANSI-blue.svg)](https://en.wikipedia.org/wiki/C99)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
 
----
-
-## Abstract
-
-This repository presents a structural ANSI C implementation of a discrete gate-level simulator modeling fundamental digital logic elements and combinational sub-components. Built from first principles, the framework synthesizes basic Boolean primitives—such as AND, OR, NOT, NAND, NOR, XOR, and XNOR gates—into higher-order computational units including half/full adders, half/full subtractors, and multi-channel multiplexers ($2\times1$ and $4\times1$). 
-
-The architecture strictly adheres to modular software engineering principles by encapsulating state outputs into discrete C structures (`struct`), isolating gate implementations from component logic, and executing deterministic truth-table verification suites.
+> **An academic-grade, gate-level hardware simulator in ANSI C modeling discrete digital logic synthesis, combinational arithmetic units, data routing multiplexers/demultiplexers, and sequential flip-flop memory elements.**
 
 ---
 
-## Architectural Taxonomy
+## Abstract & Technical Overview
 
-The simulation framework is organized hierarchically into three distinct functional tiers:
+This repository provides a structural, first-principles implementation of a **digital logic simulator** and **computer architecture framework** written in standard ANSI C. The system models physical semiconductor logic components by synthesizing primitive Boolean logic gates ($\text{AND}, \text{OR}, \text{NOT}, \text{NAND}, \text{NOR}, \text{XOR}, \text{XNOR}$) into complex **combinational** and **sequential digital circuits**.
 
-```
+Engineered for academic research, digital design education, and low-level hardware design simulation, the architecture features:
+* **Combinational Logic Circuits**: Binary Adders, Subtractors, Data Multiplexers ($\text{MUX}$), and Demultiplexers ($\text{DEMUX}$).
+* **Sequential Logic & Memory Circuits**: Active-Low Bistable NAND SR Latches, Gated Clocked SR Flip-Flops, and Master-Slave/Steered JK Flip-Flops.
+* **Deterministic Output Verification**: Tabular truth-table execution harness rendering state changes in formatted ASCII representation.
+
+---
+
+## System Architecture & Hierarchical Layering
+
+The framework follows a strict **Register-Transfer Level (RTL)** layered hierarchy:
+
+```text
 +-------------------------------------------------------------------+
 |                     Execution & Verification                      |
 |                            (main.c)                               |
@@ -24,11 +31,11 @@ The simulation framework is organized hierarchically into three distinct functio
                                   |
                                   v
 +-------------------------------------------------------------------+
-|                  Combinational Circuit Layer                      |
-|       +-------------------+---------------+------------------+    |
-|       | Arithmetic Units  | Subtraction   | Data Selection   |    |
-|       | (adder.c/.h)      | (substractor) | (multiplexer)    |    |
-|       +-------------------+---------------+------------------+    |
+|                     Digital Circuit Layer                         |
+|  +----------------+----------------+----------------+----------+  |
+|  | Arithmetic     | Data Routing   | Memory Units   | Latches  |  |
+|  | (Adders/Sub)   | (MUX / DEMUX)  | (Flip-Flops)   | (SR)     |  |
+|  +----------------+----------------+----------------+----------+  |
 +-------------------------------------------------------------------+
                                   |
                                   v
@@ -38,19 +45,15 @@ The simulation framework is organized hierarchically into three distinct functio
 +-------------------------------------------------------------------+
 ```
 
-1. **Primitive Layer (`gates.h`, `gates.c`)**: Low-level function primitives evaluating binary logic values $x, y \in \{0, 1\}$.
-2. **Combinational Layer (`adder.c`, `substractor.c`, `multiplexer.c`)**: Higher-order digital modules constructed strictly through composition of primitive logic functions.
-3. **Verification Layer (`main.c`)**: Standardized verification suite rendering tabular truth table outputs across full input spaces.
-
 ---
 
-## Formal Boolean Formulations & Mathematical Specifications
+## Formal Mathematical Specifications & Boolean Formulations
 
 ### 1. Primitive Logic Gates
 
-Each primitive logic function processes single-bit boolean operands $A, B \in \{0, 1\}$.
+Processing single-bit binary signals $A, B \in \{0, 1\}$:
 
-| Logic Gate | Formal Boolean Expression | ANSI C Implementation Logic |
+| Gate | Formal Boolean Function | ANSI C Implementation |
 | :--- | :--- | :--- |
 | **AND** | $Y = A \cdot B$ | `a & b` |
 | **OR** | $Y = A + B$ | `a \|\| b` |
@@ -64,107 +67,102 @@ Each primitive logic function processes single-bit boolean operands $A, B \in \{
 
 ### 2. Combinational Arithmetic Circuits
 
-#### Half-Adder ($\text{HA}$)
-A two-input binary adder computing the sum bit $S$ and output carry $C$.
+#### Half-Adder ($\text{HA}$) & Full-Adder ($\text{FA}$)
 
 $$\begin{aligned}
-S &= A \oplus B \\
-C &= A \cdot B
+\text{HA: } S &= A \oplus B, \quad C_{out} = A \cdot B \\
+\text{FA: } S &= A \oplus B \oplus C_{in}, \quad C_{out} = (A \cdot B) + (C_{in} \cdot (A \oplus B))
 \end{aligned}$$
 
-#### Full-Adder ($\text{FA}$)
-A three-input adder accepting inputs $A, B$ and carry-in $C_{in}$. Implemented compositionally using two cascaded Half-Adders:
+#### Half-Subtractor ($\text{HS}$) & Full-Subtractor ($\text{FS}$)
 
 $$\begin{aligned}
-S &= A \oplus B \oplus C_{in} \\
-C_{out} &= (A \cdot B) + (C_{in} \cdot (A \oplus B))
+\text{HS: } D &= A \oplus B, \quad B_{out} = \overline{A} \cdot B \\
+\text{FS: } D &= A \oplus B \oplus B_{in}, \quad B_{out} = (\overline{A} \cdot B) + (\overline{A \oplus B} \cdot B_{in})
 \end{aligned}$$
-
-```c
-typedef struct {
-  int sum;
-  int carry;
-} FullAdderOutput;
-```
 
 ---
 
-### 3. Combinational Subtraction Circuits
+### 3. Data Routing Circuits (Multiplexers & Demultiplexers)
 
-#### Half-Subtractor ($\text{HS}$)
-Computes difference $D$ and borrow-out $B_{out}$ for two binary inputs $A$ and $B$:
-
+#### $2\times1$ & $4\times1$ Multiplexers ($\text{MUX}$)
 $$\begin{aligned}
-D &= A \oplus B \\
-B_{out} &= \overline{A} \cdot B
+\text{MUX}_{2\times1}: Y &= (\overline{S_0} \cdot I_1) + (S_0 \cdot I_2) \\
+\text{MUX}_{4\times1}: Y &= (\overline{S_0}\cdot\overline{S_1}\cdot I_1) + (S_0\cdot\overline{S_1}\cdot I_2) + (\overline{S_0}\cdot S_1\cdot I_3) + (S_0\cdot S_1\cdot I_4)
 \end{aligned}$$
 
-#### Full-Subtractor ($\text{FS}$)
-Processes minuend $A$, subtrahend $B$, and borrow-in $B_{in}$. Synthesized via two cascaded Half-Subtractors:
-
+#### $1\times2$ & $1\times4$ Demultiplexers ($\text{DEMUX}$)
 $$\begin{aligned}
-D &= A \oplus B \oplus B_{in} \\
-B_{out} &= (\overline{A} \cdot B) + (\overline{A \oplus B} \cdot B_{in})
+\text{DEMUX}_{1\times2}: O_1 &= \overline{S_0} \cdot I, \quad O_2 = S_0 \cdot I \\
+\text{DEMUX}_{1\times4}: O_1 &= \overline{S_0}\cdot\overline{S_1}\cdot I, \quad O_2 = S_0\cdot\overline{S_1}\cdot I, \quad O_3 = \overline{S_0}\cdot S_1\cdot I, \quad O_4 = S_0\cdot S_1\cdot I
 \end{aligned}$$
-
-```c
-typedef struct {
-  int borrow;
-  int substraction;
-} FullSubstractorOutput;
-```
 
 ---
 
-### 4. Data Multiplexing Units
+### 4. Sequential Memory Elements (Latches & Flip-Flops)
 
-#### $2 \times 1$ Multiplexer ($\text{MUX}_{2\times1}$)
-Selects between data inputs $I_1$ and $I_2$ controlled by select signal $S_0$:
+#### Active-Low NAND SR Latch
+Feedback-stabilized bistable multivibrator evaluating active-low inputs $\overline{S}, \overline{R}$:
+$$\begin{aligned}
+Q &= \text{NAND}(\overline{S}, \overline{Q}) \\
+\overline{Q} &= \text{NAND}(\overline{R}, Q)
+\end{aligned}$$
 
-$$Y = (\overline{S_0} \cdot I_1) + (S_0 \cdot I_2)$$
+#### Gated SR Flip-Flop
+Synchronized by clock enable signal $\text{CLK}$:
+$$S' = \text{NAND}(S, \text{CLK}), \quad R' = \text{NAND}(R, \text{CLK})$$
 
-#### $4 \times 1$ Multiplexer ($\text{MUX}_{4\times1}$)
-Selects one of four data inputs $\{I_1, I_2, I_3, I_4\}$ using select signals $(S_0, S_1)$:
+#### JK Flip-Flop (Toggle-Capable Memory)
+Eliminates invalid states by steering inputs using current state feedback $Q$ and $\overline{Q}$:
+$$\begin{aligned}
+S' &= \text{NAND}(\text{AND}(J, \text{CLK}), \overline{Q}_{prev}) \\
+R' &= \text{NAND}(\text{AND}(K, \text{CLK}), Q_{prev})
+\end{aligned}$$
 
-$$Y = (\overline{S_0} \cdot \overline{S_1} \cdot I_1) + (S_0 \cdot \overline{S_1} \cdot I_2) + (\overline{S_0} \cdot S_1 \cdot I_3) + (S_0 \cdot S_1 \cdot I_4)$$
+| State Transition | $J$ | $K$ | $\text{CLK}$ | $Q_{next}$ | Characteristic Operation |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **Clock Off** | $X$ | $X$ | $0$ | $Q_{prev}$ | Memory Hold |
+| **No Change** | $0$ | $0$ | $1$ | $Q_{prev}$ | Memory Hold |
+| **Reset** | $0$ | $1$ | $1$ | $0$ | Reset State ($Q=0$) |
+| **Set** | $1$ | $0$ | $1$ | $1$ | Set State ($Q=1$) |
+| **Toggle** | $1$ | $1$ | $1$ | $\overline{Q}_{prev}$ | State Inversion (Toggle) |
 
 ---
 
-## Directory & File Structure
+## Directory & Source Code Structure
 
 ```text
 .
-├── README.md         # Project technical & academic documentation
-├── main.c            # Test suite execution harness and formatted ASCII renderer
-├── gates.h           # Declarations for primitive Boolean logic functions
-├── gates.c           # Implementations of logic gate primitives
-├── adder.h           # Struct definitions and declarations for Half/Full Adders
-├── adder.c           # Compositional implementation of Adder units
-├── substractor.h     # Struct definitions and declarations for Half/Full Subtractors
-├── substractor.c     # Compositional implementation of Subtractor units
-├── multiplexer.h     # Declarations for 2:1 and 4:1 Multiplexers
-└── multiplexer.c     # Gate-level implementations of Multiplexer units
+├── README.md         # Comprehensive academic & SEO project documentation
+├── main.c            # Test suite execution harness and ASCII renderer
+├── gates.h / .c      # Primitive Boolean logic gate evaluations
+├── adder.h / .c      # Half-Adder and Full-Adder circuit implementations
+├── substractor.h / .c# Half-Subtractor and Full-Subtractor circuit implementations
+├── multiplexer.h / .c# 2:1 and 4:1 Data Multiplexer units
+├── demultiplexer.h/.c# 1:2 and 1:4 Data Demultiplexer units
+├── latchs.h / .c     # Bistable Active-Low NAND SR Latch implementation
+└── flipflops.h / .c  # Clocked SR Flip-Flop and JK Flip-Flop implementations
 ```
 
 ---
 
 ## Compilation & Execution Guide
 
-### Prerequisites
-- GCC Compiler toolchain (ANSI C standard compliant)
-- POSIX-compliant shell interface
+### Toolchain Requirements
+* **Compiler**: GCC / Clang (C99 / ANSI C compliant)
+* **Shell Environment**: POSIX Terminal / macOS zsh / Linux bash
 
-### Build Command
+### Compilation
 
-Compile all source modules and link them into a single unified binary:
+Compile all modular C sources and generate the target executable:
 
 ```bash
-gcc -Wall -Wextra -std=c99 main.c gates.c adder.c substractor.c multiplexer.c demultiplexer.c -o main
+gcc -Wall -Wextra -std=c99 main.c gates.c adder.c substractor.c multiplexer.c demultiplexer.c latchs.c flipflops.c -o main
 ```
 
 ### Execution
 
-Run the compiled executable to execute the truth-table verification suite:
+Execute the binary to run the automated truth-table test harness:
 
 ```bash
 ./main
@@ -172,23 +170,47 @@ Run the compiled executable to execute the truth-table verification suite:
 
 ---
 
-## Sample Truth Table Output
-
-Below is an excerpt of the formatted ASCII truth-table output generated by the test harness:
+## Sample Execution Output
 
 ```text
 ==================================================
-            MULTIPLEXER CIRCUITS TEST             
+             FLIP-FLOPS / LATCHES TEST            
 ==================================================
 
---- 4 X 1 MUX Circuit ---
- I1 | I2 | I3 | I4 | S0 | S1 | Output
-----+----+----+----+----+----+--------
-  1 |  0 |  1 |  0 |  0 |  0 |   1
-  1 |  0 |  1 |  0 |  1 |  0 |   0
-  1 |  0 |  1 |  0 |  0 |  1 |   1
-  1 |  0 |  1 |  0 |  1 |  1 |   0
+--- SR LATCH (NAND Active-Low) ---
+ S | R | Qn | Qn_bar | State Description
+---+---+----+--------+-------------------
+ 0 | 1 |  1 |   0    | Set (Q=1)
+ 1 | 1 |  1 |   0    | Hold (Retains Q=1)
+ 1 | 0 |  0 |   1    | Reset (Q=0)
+ 1 | 1 |  0 |   1    | Hold (Retains Q=0)
+ 0 | 0 |  1 |   1    | Invalid (Forbidden)
+
+--- SR FLIP-FLOP (Gated Clock) ---
+ CLK | S | R | Qn | Qn_bar | State Description
+-----+---+---+----+--------+-------------------
+  0  | 1 | 0 |  0 |   1    | Clock Off (Holds state)
+  1  | 1 | 0 |  1 |   0    | Set (Q=1)
+  1  | 0 | 0 |  1 |   0    | Hold (Retains Q=1)
+  1  | 0 | 1 |  0 |   1    | Reset (Q=0)
+  1  | 0 | 0 |  0 |   1    | Hold (Retains Q=0)
+  1  | 1 | 1 |  1 |   1    | Invalid (Forbidden)
+
+--- JK FLIP-FLOP ---
+ CLK | J | K | Qn | Qn_bar | State Description
+-----+---+---+----+--------+-------------------
+  0  | 1 | 0 |  0 |   1    | Clock Off
+  1  | 0 | 0 |  0 |   1    | Hold
+  1  | 1 | 0 |  1 |   0    | Set (Q=1)
+  1  | 0 | 1 |  0 |   1    | Reset (Q=0)
+  1  | 1 | 1 |  1 |   0    | Toggle
 ```
+
+---
+
+## Keywords & Related Concepts
+
+`Digital Logic Simulator` `Computer Architecture in C` `Boolean Algebra Emulator` `Gate-Level Synthesis` `RTL Simulation` `JK Flip Flop C Implementation` `SR Latch Logic Gates` `Multiplexer Demultiplexer Circuit` `Sequential Logic Simulation` `Combinational Circuit Design`
 
 ---
 
@@ -196,9 +218,9 @@ Below is an excerpt of the formatted ASCII truth-table output generated by the t
 
 1. **M. Morris Mano & Michael D. Ciletti**, *Digital Design: With an Introduction to the Verilog HDL, VHDL, and SystemVerilog*, 6th Edition, Pearson, 2017.
 2. **Charles H. Roth Jr. & Larry L. Kinney**, *Fundamentals of Logic Design*, 7th Edition, Cengage Learning, 2013.
-3. **Kernighan, B. W., & Ritchie, D. M.**, *The C Programming Language*, 2nd Edition, Prentice Hall, 1988.
+3. **Brian W. Kernighan & Dennis M. Ritchie**, *The C Programming Language*, 2nd Edition, Prentice Hall, 1988.
 
 ---
 
 > [!NOTE]
-> All combinational functions in this simulation avoid hardware abstraction libraries and evaluate signals exclusively through primitive logic functions to demonstrate structural synthesis.
+> This simulation framework evaluates discrete Boolean signals through structural gate functions without external hardware emulation dependencies.
