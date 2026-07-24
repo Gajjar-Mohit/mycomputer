@@ -18,7 +18,14 @@ Equation: CARRY = A.B | SUM = A'.B + A.B'
 
 */
 
-void HALF_ADDER(int a, int b, int *sum, int *carry) {
-  *sum = OR(AND(!a, b), AND(a, !b));
-  *carry = AND(a, b);
+typedef struct {
+  int sum;
+  int carry;
+} HalfAdderOutput;
+
+HalfAdderOutput HALF_ADDER(int a, int b) {
+  HalfAdderOutput result;
+  result.sum = OR(AND(!a, b), AND(a, !b));
+  result.carry = AND(a, b);
+  return result;
 }

@@ -1,6 +1,11 @@
 #ifndef ADDER
 #define ADDER
 
-void HALF_ADDER(int a, int b, int *sum, int *carry);
+typedef struct {
+  int sum;
+  int carry;
+} HalfAdderOutput;
+
+HalfAdderOutput HALF_ADDER(int a, int b);
 
 #endif
