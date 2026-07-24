@@ -48,7 +48,7 @@ A | B | C | Borrow | Substraction
 1 | 1 | 1 |    1    |      1
 
 
-Equation: CARRY = A'.C + B.A' + B.C | SUM = A ⊕ B ⊕ C
+Equation: BORROW = A'.C + B.A' + B.C | SUBSTRACTION = A ⊕ B ⊕ C
 
 */
 
