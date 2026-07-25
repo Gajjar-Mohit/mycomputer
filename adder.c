@@ -23,10 +23,10 @@ Equation: CARRY = A.B | SUM = A'.B + A.B'
 typedef struct {
   int sum;
   int carry;
-} HalfAdderOutput;
+} AdderOutput;
 
-HalfAdderOutput HALF_ADDER(int a, int b) {
-  HalfAdderOutput result;
+AdderOutput HALF_ADDER(int a, int b) {
+  AdderOutput result;
   result.sum = XOR(a, b);
   result.carry = AND(a, b);
   return result;
@@ -60,7 +60,7 @@ typedef struct {
 
 FullAdderOutput FULL_ADDER(int a, int b, int c) {
   FullAdderOutput result;
-  HalfAdderOutput halfadder1, halfadder2;
+  AdderOutput halfadder1, halfadder2;
   halfadder1 = HALF_ADDER(a, b);
   halfadder2 = HALF_ADDER(halfadder1.sum, c);
   result.sum = halfadder2.sum;

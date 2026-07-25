@@ -91,7 +91,7 @@ void test_adders(void) {
   printf("---+---+-------+-----\n");
   for (int a = 0; a <= 1; a++) {
     for (int b = 0; b <= 1; b++) {
-      HalfAdderOutput out = HALF_ADDER(a, b);
+      AdderOutput out = HALF_ADDER(a, b);
       printf(" %d | %d |   %d   |  %d\n", a, b, out.carry, out.sum);
     }
   }
@@ -103,7 +103,7 @@ void test_adders(void) {
   for (int a = 0; a <= 1; a++) {
     for (int b = 0; b <= 1; b++) {
       for (int c = 0; c <= 1; c++) {
-        FullAdderOutput out = FULL_ADDER(a, b, c);
+        AdderOutput out = FULL_ADDER(a, b, c);
         printf(" %d | %d | %d |   %d   |  %d\n", a, b, c, out.carry, out.sum);
       }
     }
@@ -274,7 +274,8 @@ void test_flipflops(void) {
   printf("  1  | 1 | 0 |  %d |   %d    | Set (Q=1)\n", jk_out.Qn, jk_out.Qn_1);
 
   jk_out = JKFLIPFLOP(0, 1, 1);
-  printf("  1  | 0 | 1 |  %d |   %d    | Reset (Q=0)\n", jk_out.Qn, jk_out.Qn_1);
+  printf("  1  | 0 | 1 |  %d |   %d    | Reset (Q=0)\n", jk_out.Qn,
+         jk_out.Qn_1);
 
   jk_out = JKFLIPFLOP(1, 1, 1);
   printf("  1  | 1 | 1 |  %d |   %d    | Toggle\n", jk_out.Qn, jk_out.Qn_1);
