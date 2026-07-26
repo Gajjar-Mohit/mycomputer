@@ -1,0 +1,45 @@
+name: Sync Wiki to GitHub
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'wiki/**'
+      - '.github/workflows/wiki-sync.yml'
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      wiki: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Push Wiki Folder to GitHub Wiki
+        env:
+          ACTION_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Clone the GitHub Wiki repository
+          REPO_NAME="${{ github.repository }}"
+          git clone "https://x-access-token:${ACTION_TOKEN}@github.com/${REPO_NAME}.wiki.git" wiki_repo
+          
+          # Copy all files from local wiki/ folder to wiki_repo/
+          cp -r wiki/* wiki_repo/
+          
+          # Commit and push to GitHub Wiki
+          cd wiki_repo
+          git add .
+          if git diff-index --quiet HEAD; then
+            echo "No changes in wiki to commit."
+          else
+            git commit -m "Auto-sync wiki from main repo (${{ github.sha }})"
+            git push origin master || git push origin main
+          fi
