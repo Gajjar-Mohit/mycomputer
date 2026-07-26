@@ -1,5 +1,6 @@
 #include "adder.h"
 #include "demultiplexer.h"
+#include "encoder.h"
 #include "flipflops.h"
 #include "gates.h"
 #include "latchs.h"
@@ -283,8 +284,43 @@ void test_flipflops(void) {
   printf("\n");
 }
 
-void test_clock(void) {
-  
+void test_clock(void) {}
+
+void test_encoder(void) {
+  printf("==================================================\n");
+  printf("                  ENCODER TEST                    \n");
+  printf("==================================================\n\n");
+
+  printf("--- 8-to-3 Line Encoder (BIN_TO_BCD_ENCODER) ---\n");
+  printf(" Y7 | Y6 | Y5 | Y4 | Y3 | Y2 | Y1 | Y0 | A2 | A1 | A0\n");
+  printf("----+----+----+----+----+----+----+----+----+----+----\n");
+
+  int inputs[8][8] = {
+      {0, 0, 0, 0, 0, 0, 0, 1}, // Y0 = 1 -> Output 000
+      {0, 0, 0, 0, 0, 0, 1, 0}, // Y1 = 1 -> Output 001
+      {0, 0, 0, 0, 0, 1, 0, 0}, // Y2 = 1 -> Output 010
+      {0, 0, 0, 0, 1, 0, 0, 0}, // Y3 = 1 -> Output 011
+      {0, 0, 0, 1, 0, 0, 0, 0}, // Y4 = 1 -> Output 100
+      {0, 0, 1, 0, 0, 0, 0, 0}, // Y5 = 1 -> Output 101
+      {0, 1, 0, 0, 0, 0, 0, 0}, // Y6 = 1 -> Output 110
+      {1, 0, 0, 0, 0, 0, 0, 0}  // Y7 = 1 -> Output 111
+  };
+
+  for (int i = 0; i < 8; i++) {
+    int y7 = inputs[i][0];
+    int y6 = inputs[i][1];
+    int y5 = inputs[i][2];
+    int y4 = inputs[i][3];
+    int y3 = inputs[i][4];
+    int y2 = inputs[i][5];
+    int y1 = inputs[i][6];
+    int y0 = inputs[i][7];
+
+    EncoderOutput out = BIN_TO_BCD_ENCODER(y7, y6, y5, y4, y3, y2, y1);
+    printf("  %d |  %d |  %d |  %d |  %d |  %d |  %d |  %d |  %d |  %d |  %d\n",
+           y7, y6, y5, y4, y3, y2, y1, y0, out.a2, out.a1, out.a0);
+  }
+  printf("\n");
 }
 
 int main() {
@@ -295,6 +331,7 @@ int main() {
   // test_demultiplexers();
   // test_flipflops();
 
+  test_encoder();
+
   return 0;
 }
-
