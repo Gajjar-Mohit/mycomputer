@@ -5,61 +5,164 @@
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
 [![SEO Optimized](https://img.shields.io/badge/Search_Indexed-CPU_Project-orange.svg)]()
 
-> **The ultimate goal of this project is to construct a fully functional Central Processing Unit (CPU / Processor) from scratch in C. Built strictly from first principles starting with primitive logic gates, the architecture builds up through combinational circuits, sequential memory elements, ALUs, register files, instruction decoders, and clock cycles to simulate a complete computer processor.**
+> **The primary goal of this project is to construct a fully functional Central Processing Unit (CPU / Processor) from scratch in ANSI C. Built strictly from first principles starting with primitive logic gates, the architecture synthesizes combinational circuits, sequential memory elements, Arithmetic Logic Units (ALU), register files, instruction decoders, and clock execution cycles to simulate a complete computer processor.**
 
 ---
 
-## 🎯 Main Goal & Project Vision
+## 🎯 Main Goal & System Architecture Roadmap
 
-This project is a bottom-up hardware design simulation of a **CPU (Central Processing Unit)** written entirely in standard C (C11).
+This repository represents a bottom-up hardware design simulation of a **CPU (Central Processing Unit)** written entirely in standard C (C11).
 
-Instead of relying on high-level abstractions or external hardware emulators, every component of the CPU is built ground-up from **Boolean Logic Gates**:
+Instead of using high-level abstractions, every component of the CPU is constructed ground-up from fundamental **Boolean Logic Gates**:
 
 ```text
-[ Logic Gates ] ──> [ Combinational Circuits ] ──> [ ALUs & Encoders ]
-                                                         │
-[ Clock & Memory ] ──> [ Registers & Control Unit ] ──────┼──> [ FULL CPU PROCESSOR ]
++-------------------------------------------------------------------+
+|                       FULL CPU PROCESSOR                          |
+|  +-------------------+-------------------+---------------------+  |
+|  | Program Counter   | Control Unit (CU) | Register File (REG) |  |
+|  | (PC / Accumulator)| (Decoder & Logic) | (JK / SR Memory)    |  |
+|  +-------------------+-------------------+---------------------+  |
++-------------------------------------------------------------------+
+                                  ^
+                                  |
++-------------------------------------------------------------------+
+|               Arithmetic Logic Unit & Bus Routing (ALU)           |
+|  +----------------+----------------+----------------+----------+  |
+|  | Arithmetic     | Data Routing   | Encoders &     | System   |  |
+|  | (Adders/Sub)   | (MUX / DEMUX)  | Decoders       | Clock    |  |
+|  +----------------+----------------+----------------+----------+  |
++-------------------------------------------------------------------+
+                                  ^
+                                  |
++-------------------------------------------------------------------+
+|                      Primitive Logic Gate Layer                   |
+|                            (gates.c / .h)                         |
++-------------------------------------------------------------------+
 ```
-
-### CPU Development Roadmap:
-1. **Gate-Level Primitive Layer**: AND, OR, NOT, NAND, NOR, XOR, XNOR logic gates.
-2. **Arithmetic Logic Unit (ALU)**: Adders, Subtractors, Bitwise operations, Status Flags.
-3. **Data Routing Units**: Multiplexers (MUX) and Demultiplexers (DEMUX) for bus routing.
-4. **Instruction & State Decoders**: Encoders and Decoders for opcodes and instruction decoding.
-5. **Memory & Register File**: Bistable SR Latches, Clocked SR Flip-Flops, JK Flip-Flops, Registers.
-6. **Clock & Control Unit**: Clock pulse generator, Instruction Fetch-Decode-Execute pipeline, Program Counter (PC), Accumulator (ACC), and Control Unit (CU).
 
 ---
 
-## 🚀 Key Modules & Implemented Hardware Components
+## 🔬 Formal Mathematical Specifications & Boolean Formulations
 
-### 1. Primitive Logic Gates (`gates.c` / `gates.h`)
-First-principles logic gate evaluation using bitwise operations:
-* **AND, OR, NOT, NAND, NOR, XOR, XNOR**
+### 1. Primitive Logic Gates (`gates.c`)
 
-### 2. Combinational Arithmetic Unit (`adder.c`, `substractor.c`)
-Core ALU arithmetic building blocks:
-* **Half-Adder (HA)** & **Full-Adder (FA)**
-* **Half-Subtractor (HS)** & **Full-Subtractor (FS)**
+Processing binary signals $A, B \in \{0, 1\}$:
+
+| Gate | Formal Boolean Function | ANSI C Implementation |
+| :--- | :--- | :--- |
+| **AND** | $Y = A \cdot B$ | `a & b` |
+| **OR** | $Y = A + B$ | `a \|\| b` |
+| **NOT** | $Y = \overline{A}$ | `!a` |
+| **NAND** | $Y = \overline{A \cdot B}$ | `!AND(a, b)` |
+| **NOR** | $Y = \overline{A + B}$ | `!OR(a, b)` |
+| **XOR** | $Y = A \oplus B = \overline{A}B + A\overline{B}$ | `OR(AND(!a, b), AND(a, !b))` |
+| **XNOR** | $Y = \overline{A \oplus B} = AB + \overline{A}\overline{B}$ | `OR(AND(a, b), AND(!a, !b))` |
+
+---
+
+### 2. Arithmetic Logic Unit (ALU) Components (`adder.c`, `substractor.c`)
+
+#### Half-Adder ($\text{HA}$)
+
+$$S = A \oplus B$$
+
+$$C_{\text{out}} = A \cdot B$$
+
+#### Full-Adder ($\text{FA}$)
+
+$$S = A \oplus B \oplus C_{\text{in}}$$
+
+$$C_{\text{out}} = (A \cdot B) + (C_{\text{in}} \cdot (A \oplus B))$$
+
+#### Half-Subtractor ($\text{HS}$)
+
+$$D = A \oplus B$$
+
+$$B_{\text{out}} = \overline{A} \cdot B$$
+
+#### Full-Subtractor ($\text{FS}$)
+
+$$D = A \oplus B \oplus B_{\text{in}}$$
+
+$$B_{\text{out}} = (\overline{A} \cdot B) + (\overline{A \oplus B} \cdot B_{\text{in}})$$
+
+---
 
 ### 3. Data Routing & Bus Control (`multiplexer.c`, `demultiplexer.c`)
-Used for CPU internal bus switching, register selection, and data routing:
-* **2-to-1 Multiplexer (MUX 2x1)** & **4-to-1 Multiplexer (MUX 4x1)**
-* **1-to-2 Demultiplexer (DEMUX 1x2)** & **1-to-4 Demultiplexer (DEMUX 1x4)**
 
-### 4. Code Converters & Instruction Decoders (`encoder.c`, `decoder.c`)
-Decodes instruction opcodes and converts signals:
-* **8-to-3 Line Encoder / Binary-to-BCD Encoder (`BIN_TO_BCD_ENCODER`)**: Converts 8 input lines (Y7-Y0) into a 3-bit binary address (A2, A1, A0).
-* **3-to-7 Active-HIGH Decoder (`BCD_TO_BIN_DECODER`)**: Decodes 3-bit binary addresses (I2, I1, I0) into 7 distinct active-HIGH control lines (O7-O1).
+#### $2\times1$ Multiplexer ($\text{MUX}_{2\times1}$)
 
-### 5. Sequential Memory Elements & Registers (`latchs.c`, `flipflops.c`)
-Stores CPU state, flag bits, and register values:
-* **Active-Low NAND SR Latch**: Bistable memory cell.
-* **Gated SR Flip-Flop**: Clock-synchronized bit store.
-* **JK Flip-Flop**: Toggle-capable register bit with zero invalid states.
+$$Y = (\overline{S_0} \cdot I_1) + (S_0 \cdot I_2)$$
 
-### 6. System Clock & Timing (`clock.c`)
-* **Clock Pulse Generator**: Synchronizes state transitions during instruction execution cycles.
+#### $4\times1$ Multiplexer ($\text{MUX}_{4\times1}$)
+
+$$Y = (\overline{S_0} \cdot \overline{S_1} \cdot I_1) + (S_0 \cdot \overline{S_1} \cdot I_2) + (\overline{S_0} \cdot S_1 \cdot I_3) + (S_0 \cdot S_1 \cdot I_4)$$
+
+#### $1\times2$ Demultiplexer ($\text{DEMUX}_{1\times2}$)
+
+$$O_1 = \overline{S_0} \cdot I, \quad O_2 = S_0 \cdot I$$
+
+#### $1\times4$ Demultiplexer ($\text{DEMUX}_{1\times4}$)
+
+$$O_1 = \overline{S_0}\cdot\overline{S_1}\cdot I, \quad O_2 = S_0\cdot\overline{S_1}\cdot I, \quad O_3 = \overline{S_0}\cdot S_1\cdot I, \quad O_4 = S_0\cdot S_1\cdot I$$
+
+---
+
+### 4. Instruction & Address Decoders (`encoder.c`, `decoder.c`)
+
+#### 8-to-3 Line Encoder ($\text{ENC}_{8\times3}$) / Binary-to-BCD Encoder
+
+Converts 8 input lines ($Y_7$ to $Y_0$) into a 3-bit binary code ($A_2, A_1, A_0$):
+
+$$A_2 = Y_4 + Y_5 + Y_6 + Y_7$$
+
+$$A_1 = Y_2 + Y_3 + Y_6 + Y_7$$
+
+$$A_0 = Y_1 + Y_3 + Y_5 + Y_7$$
+
+#### 3-to-7 Active-HIGH Line Decoder ($\text{DEC}_{3\times7}$)
+
+Decodes a 3-bit instruction address ($I_2, I_1, I_0$) into 7 active-HIGH control signals ($O_7$ to $O_1$):
+
+$$O_1 = \overline{I_2} \cdot \overline{I_1} \cdot I_0 \quad (\text{Binary } 001_2 = 1)$$
+
+$$O_2 = \overline{I_2} \cdot I_1 \cdot \overline{I_0} \quad (\text{Binary } 010_2 = 2)$$
+
+$$O_3 = \overline{I_2} \cdot I_1 \cdot I_0 \quad (\text{Binary } 011_2 = 3)$$
+
+$$O_4 = I_2 \cdot \overline{I_1} \cdot \overline{I_0} \quad (\text{Binary } 100_2 = 4)$$
+
+$$O_5 = I_2 \cdot \overline{I_1} \cdot I_0 \quad (\text{Binary } 101_2 = 5)$$
+
+$$O_6 = I_2 \cdot I_1 \cdot \overline{I_0} \quad (\text{Binary } 110_2 = 6)$$
+
+$$O_7 = I_2 \cdot I_1 \cdot I_0 \quad (\text{Binary } 111_2 = 7)$$
+
+---
+
+### 5. Sequential Memory & Register File Elements (`flipflops.c`, `latchs.c`)
+
+#### Active-Low NAND SR Latch
+
+$$Q = \text{NAND}(\overline{S}, \overline{Q}), \quad \overline{Q} = \text{NAND}(\overline{R}, Q)$$
+
+#### Gated SR Flip-Flop
+
+$$S' = \text{NAND}(S, \text{CLK}), \quad R' = \text{NAND}(R, \text{CLK})$$
+
+#### JK Flip-Flop (Register Memory Bit)
+
+$$S' = \text{NAND}(\text{AND}(J, \text{CLK}), \overline{Q}_{\text{prev}})$$
+
+$$R' = \text{NAND}(\text{AND}(K, \text{CLK}), Q_{\text{prev}})$$
+
+| State Transition | $J$ | $K$ | $\text{CLK}$ | $Q_{\text{next}}$ | $\overline{Q}_{\text{next}}$ | Characteristic Operation |
+| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Clock Off** | $X$ | $X$ | $0$ | $Q_{\text{prev}}$ | $\overline{Q}_{\text{prev}}$ | Memory Hold |
+| **No Change** | $0$ | $0$ | $1$ | $Q_{\text{prev}}$ | $\overline{Q}_{\text{prev}}$ | Memory Hold |
+| **Reset** | $0$ | $1$ | $1$ | $0$ | $1$ | Reset ($Q=0$) |
+| **Set** | $1$ | $0$ | $1$ | $1$ | $0$ | Set ($Q=1$) |
+| **Toggle** | $1$ | $1$ | $1$ | $\overline{Q}_{\text{prev}}$ | $Q_{\text{prev}}$ | State Inversion (Toggle) |
 
 ---
 
@@ -67,8 +170,8 @@ Stores CPU state, flag bits, and register values:
 
 ```text
 .
-├── Makefile          # Dynamic compilation script for all C components
-├── README.md         # Master CPU project documentation & roadmap
+├── Makefile          # Automated compilation script for all C components
+├── README.md         # Academic CPU project documentation & formal specs
 ├── main.c            # Test suite execution harness and CPU verification
 ├── gates.h / .c      # Primitive Boolean logic gates
 ├── adder.h / .c      # Arithmetic Adders for ALU
@@ -81,24 +184,6 @@ Stores CPU state, flag bits, and register values:
 ├── flipflops.h / .c  # Clocked flip-flop memory registers
 └── clock.h / .c      # System clock timing module
 ```
-
----
-
-## 📐 Circuit Specifications & Logic Tables
-
-### 8-to-3 Encoder Boolean Logic (`BIN_TO_BCD_ENCODER`)
-* **A2 = Y4 + Y5 + Y6 + Y7**
-* **A1 = Y2 + Y3 + Y6 + Y7**
-* **A0 = Y1 + Y3 + Y5 + Y7**
-
-### 3-to-7 Line Decoder Logic (`BCD_TO_BIN_DECODER`)
-* **O1 = (NOT I2) * (NOT I1) * I0** (Active for Binary 001 = 1)
-* **O2 = (NOT I2) * I1 * (NOT I0)** (Active for Binary 010 = 2)
-* **O3 = (NOT I2) * I1 * I0** (Active for Binary 011 = 3)
-* **O4 = I2 * (NOT I1) * (NOT I0)** (Active for Binary 100 = 4)
-* **O5 = I2 * (NOT I1) * I0** (Active for Binary 101 = 5)
-* **O6 = I2 * I1 * (NOT I0)** (Active for Binary 110 = 6)
-* **O7 = I2 * I1 * I0** (Active for Binary 111 = 7)
 
 ---
 
@@ -125,6 +210,9 @@ make clean
 
 ---
 
-## 📄 License & Attribution
+## 📄 License & Academic References
 
-This open-source project is licensed under the **MIT License**. Built for computer engineering students, system programmers, and computer architecture enthusiasts building CPUs from scratch.
+1. **M. Morris Mano & Michael D. Ciletti**, *Digital Design: With an Introduction to the Verilog HDL, VHDL, and SystemVerilog*, 6th Edition, Pearson, 2017.
+2. **Charles H. Roth Jr. & Larry L. Kinney**, *Fundamentals of Logic Design*, 7th Edition, Cengage Learning, 2013.
+
+This open-source project is licensed under the **MIT License**. Built for computer science students, system programmers, and computer architecture enthusiasts building CPUs from scratch.
