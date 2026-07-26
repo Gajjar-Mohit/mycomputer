@@ -1,4 +1,5 @@
 #include "adder.h"
+#include "decoder.h"
 #include "demultiplexer.h"
 #include "encoder.h"
 #include "flipflops.h"
@@ -295,16 +296,10 @@ void test_encoder(void) {
   printf(" Y7 | Y6 | Y5 | Y4 | Y3 | Y2 | Y1 | Y0 | A2 | A1 | A0\n");
   printf("----+----+----+----+----+----+----+----+----+----+----\n");
 
-  int inputs[8][8] = {
-      {0, 0, 0, 0, 0, 0, 0, 1}, // Y0 = 1 -> Output 000
-      {0, 0, 0, 0, 0, 0, 1, 0}, // Y1 = 1 -> Output 001
-      {0, 0, 0, 0, 0, 1, 0, 0}, // Y2 = 1 -> Output 010
-      {0, 0, 0, 0, 1, 0, 0, 0}, // Y3 = 1 -> Output 011
-      {0, 0, 0, 1, 0, 0, 0, 0}, // Y4 = 1 -> Output 100
-      {0, 0, 1, 0, 0, 0, 0, 0}, // Y5 = 1 -> Output 101
-      {0, 1, 0, 0, 0, 0, 0, 0}, // Y6 = 1 -> Output 110
-      {1, 0, 0, 0, 0, 0, 0, 0}  // Y7 = 1 -> Output 111
-  };
+  int inputs[8][8] = {{0, 0, 0, 0, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0, 1, 0},
+                      {0, 0, 0, 0, 0, 1, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0},
+                      {0, 0, 0, 1, 0, 0, 0, 0}, {0, 0, 1, 0, 0, 0, 0, 0},
+                      {0, 1, 0, 0, 0, 0, 0, 0}, {1, 0, 0, 0, 0, 0, 0, 0}};
 
   for (int i = 0; i < 8; i++) {
     int y7 = inputs[i][0];
@@ -323,6 +318,27 @@ void test_encoder(void) {
   printf("\n");
 }
 
+void test_decoder(void) {
+  printf("==================================================\n");
+  printf("                  DECODER TEST                    \n");
+  printf("==================================================\n\n");
+
+  printf("--- 3-to-7 Line Decoder (BCD_TO_BIN_DECODER) ---\n");
+  printf(" I2 | I1 | I0 | O7 | O6 | O5 | O4 | O3 | O2 | O1\n");
+  printf("----+----+----+----+----+----+----+----+----+----\n");
+
+  for (int i2 = 0; i2 <= 1; i2++) {
+    for (int i1 = 0; i1 <= 1; i1++) {
+      for (int i0 = 0; i0 <= 1; i0++) {
+        DecoderOutput out = BCD_TO_BIN_DECODER(i2, i1, i0);
+        printf("  %d |  %d |  %d |  %d |  %d |  %d |  %d |  %d |  %d |  %d\n",
+               i2, i1, i0, out.o7, out.o6, out.o5, out.o4, out.o3, out.o2, out.o1);
+      }
+    }
+  }
+  printf("\n");
+}
+
 int main() {
   // test_gates();
   // test_adders();
@@ -330,8 +346,10 @@ int main() {
   // test_multiplexers();
   // test_demultiplexers();
   // test_flipflops();
+  // test_encoder();
 
-  test_encoder();
+  test_decoder();
 
   return 0;
 }
+
