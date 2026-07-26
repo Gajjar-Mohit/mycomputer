@@ -19,7 +19,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Push Wiki Folder to GitHub Wiki
+      - name: Push Cleaned Wiki Folder to GitHub Wiki
         env:
           ACTION_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -30,15 +30,20 @@ jobs:
           REPO_NAME="${{ github.repository }}"
           git clone "https://x-access-token:${ACTION_TOKEN}@github.com/${REPO_NAME}.wiki.git" wiki_repo
           
-          # Copy all files from local wiki/ folder to wiki_repo/
+          # 1. Clean existing wiki content (preserving .git history)
+          rm -rf wiki_repo/*
+          
+          # 2. Copy fresh wiki files from local wiki/ directory
           cp -r wiki/* wiki_repo/
           
-          # Commit and push to GitHub Wiki
+          # 3. Stage all additions, changes, and deletions (-A)
           cd wiki_repo
-          git add .
+          git add -A
+          
+          # 4. Commit and push cleaned wiki to GitHub
           if git diff-index --quiet HEAD; then
-            echo "No changes in wiki to commit."
+            echo "Wiki is already up to date."
           else
-            git commit -m "Auto-sync wiki from main repo (${{ github.sha }})"
+            git commit -m "Clean and sync wiki from main repo (${{ github.sha }})"
             git push origin master || git push origin main
           fi
