@@ -23,8 +23,7 @@ typedef struct {
   int o4;
 } Demux1x4Output;
 
-Demux1x4Output DEMUX_1X4(int i, int o1, int o2, int o3, int o4, int s0,
-                         int s1) {
+Demux1x4Output DEMUX_1X4(int i, int s0, int s1) {
   Demux1x4Output result;
   result.o1 = AND(AND(!s0, !s1), i);
   result.o2 = AND(AND(s0, !s1), i);

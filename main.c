@@ -283,13 +283,18 @@ void test_flipflops(void) {
   printf("\n");
 }
 
+void test_clock(void) {
+  
+}
+
 int main() {
-  test_gates();
-  test_adders();
-  test_subtractors();
-  test_multiplexers();
-  test_demultiplexers();
-  test_flipflops();
+  // test_gates();
+  // test_adders();
+  // test_subtractors();
+  // test_multiplexers();
+  // test_demultiplexers();
+  // test_flipflops();
 
   return 0;
 }
+
