@@ -1,4 +1,6 @@
 #include "adder.h"
+#include "clock.h"
+#include "counter.h"
 #include "decoder.h"
 #include "demultiplexer.h"
 #include "encoder.h"
@@ -332,11 +334,22 @@ void test_decoder(void) {
       for (int i0 = 0; i0 <= 1; i0++) {
         DecoderOutput out = BCD_TO_BIN_DECODER(i2, i1, i0);
         printf("  %d |  %d |  %d |  %d |  %d |  %d |  %d |  %d |  %d |  %d\n",
-               i2, i1, i0, out.o7, out.o6, out.o5, out.o4, out.o3, out.o2, out.o1);
+               i2, i1, i0, out.o7, out.o6, out.o5, out.o4, out.o3, out.o2,
+               out.o1);
       }
     }
   }
   printf("\n");
+}
+
+void test_counter(void) {
+  Clock clk;
+  clock_init(&clk);
+  for (int i = 0; i < 8; i++) {
+    int bit = clock_tick(&clk);
+    CounterOutput output = count(bit, 1);
+    printf("%d,%d,%d,%d\n", output.q0, output.q1, output.q2, output.q3);
+  }
 }
 
 int main() {
@@ -345,11 +358,10 @@ int main() {
   // test_subtractors();
   // test_multiplexers();
   // test_demultiplexers();
-  // test_flipflops();
+  test_flipflops();
   // test_encoder();
+  // test_decoder();
 
-  test_decoder();
-
+  test_counter();
   return 0;
 }
-
