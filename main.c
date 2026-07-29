@@ -218,20 +218,21 @@ void test_flipflops(void) {
   printf(" S | R | Qn | Qn_bar | State Description\n");
   printf("---+---+----+--------+-------------------\n");
 
-  LatchOutput out = SRLATCH(0, 1);
-  printf(" 0 | 1 |  %d |   %d    | Set (Q=1)\n", out.Qn, out.Qn_1);
+  LatchState latch_state = {0, 1};
+  LatchState out = SRLATCH(&latch_state, 0, 1);
+  printf(" 0 | 1 |  %d |   %d    | Set (Q=1)\n", out.q, out.q_bar);
 
-  out = SRLATCH(1, 1);
-  printf(" 1 | 1 |  %d |   %d    | Hold (Retains Q=1)\n", out.Qn, out.Qn_1);
+  out = SRLATCH(&latch_state, 1, 1);
+  printf(" 1 | 1 |  %d |   %d    | Hold (Retains Q=1)\n", out.q, out.q_bar);
 
-  out = SRLATCH(1, 0);
-  printf(" 1 | 0 |  %d |   %d    | Reset (Q=0)\n", out.Qn, out.Qn_1);
+  out = SRLATCH(&latch_state, 1, 0);
+  printf(" 1 | 0 |  %d |   %d    | Reset (Q=0)\n", out.q, out.q_bar);
 
-  out = SRLATCH(1, 1);
-  printf(" 1 | 1 |  %d |   %d    | Hold (Retains Q=0)\n", out.Qn, out.Qn_1);
+  out = SRLATCH(&latch_state, 1, 1);
+  printf(" 1 | 1 |  %d |   %d    | Hold (Retains Q=0)\n", out.q, out.q_bar);
 
-  out = SRLATCH(0, 0);
-  printf(" 0 | 0 |  %d |   %d    | Invalid (Forbidden)\n", out.Qn, out.Qn_1);
+  out = SRLATCH(&latch_state, 0, 0);
+  printf(" 0 | 0 |  %d |   %d    | Invalid (Forbidden)\n", out.q, out.q_bar);
 
   printf("\n");
 
@@ -239,26 +240,27 @@ void test_flipflops(void) {
   printf(" CLK | S | R | Qn | Qn_bar | State Description\n");
   printf("-----+---+---+----+--------+-------------------\n");
 
-  FlipFlopOutput ff_out = SRFLIPFLOP(1, 0, 0);
+  FlipFlopState sr_ff = {.latch_state = {0, 1}};
+  FlipFlopOutput ff_out = SRFLIPFLOP(&sr_ff, 1, 0, 0);
   printf("  0  | 1 | 0 |  %d |   %d    | Clock Off (Holds state)\n", ff_out.Qn,
          ff_out.Qn_1);
 
-  ff_out = SRFLIPFLOP(1, 0, 1);
+  ff_out = SRFLIPFLOP(&sr_ff, 1, 0, 1);
   printf("  1  | 1 | 0 |  %d |   %d    | Set (Q=1)\n", ff_out.Qn, ff_out.Qn_1);
 
-  ff_out = SRFLIPFLOP(0, 0, 1);
+  ff_out = SRFLIPFLOP(&sr_ff, 0, 0, 1);
   printf("  1  | 0 | 0 |  %d |   %d    | Hold (Retains Q=1)\n", ff_out.Qn,
          ff_out.Qn_1);
 
-  ff_out = SRFLIPFLOP(0, 1, 1);
+  ff_out = SRFLIPFLOP(&sr_ff, 0, 1, 1);
   printf("  1  | 0 | 1 |  %d |   %d    | Reset (Q=0)\n", ff_out.Qn,
          ff_out.Qn_1);
 
-  ff_out = SRFLIPFLOP(0, 0, 1);
+  ff_out = SRFLIPFLOP(&sr_ff, 0, 0, 1);
   printf("  1  | 0 | 0 |  %d |   %d    | Hold (Retains Q=0)\n", ff_out.Qn,
          ff_out.Qn_1);
 
-  ff_out = SRFLIPFLOP(1, 1, 1);
+  ff_out = SRFLIPFLOP(&sr_ff, 1, 1, 1);
   printf("  1  | 1 | 1 |  %d |   %d    | Invalid (Forbidden)\n", ff_out.Qn,
          ff_out.Qn_1);
 
@@ -268,20 +270,21 @@ void test_flipflops(void) {
   printf(" CLK | J | K | Qn | Qn_bar | State Description\n");
   printf("-----+---+---+----+--------+-------------------\n");
 
-  FlipFlopOutput jk_out = JKFLIPFLOP(1, 0, 0);
+  FlipFlopState jk_ff = {.latch_state = {0, 1}};
+  FlipFlopOutput jk_out = JKFLIPFLOP(&jk_ff, 1, 0, 0);
   printf("  0  | 1 | 0 |  %d |   %d    | Clock Off\n", jk_out.Qn, jk_out.Qn_1);
 
-  jk_out = JKFLIPFLOP(0, 0, 1);
+  jk_out = JKFLIPFLOP(&jk_ff, 0, 0, 1);
   printf("  1  | 0 | 0 |  %d |   %d    | Hold\n", jk_out.Qn, jk_out.Qn_1);
 
-  jk_out = JKFLIPFLOP(1, 0, 1);
+  jk_out = JKFLIPFLOP(&jk_ff, 1, 0, 1);
   printf("  1  | 1 | 0 |  %d |   %d    | Set (Q=1)\n", jk_out.Qn, jk_out.Qn_1);
 
-  jk_out = JKFLIPFLOP(0, 1, 1);
+  jk_out = JKFLIPFLOP(&jk_ff, 0, 1, 1);
   printf("  1  | 0 | 1 |  %d |   %d    | Reset (Q=0)\n", jk_out.Qn,
          jk_out.Qn_1);
 
-  jk_out = JKFLIPFLOP(1, 1, 1);
+  jk_out = JKFLIPFLOP(&jk_ff, 1, 1, 1);
   printf("  1  | 1 | 1 |  %d |   %d    | Toggle\n", jk_out.Qn, jk_out.Qn_1);
 
   printf("\n");
@@ -343,12 +346,14 @@ void test_decoder(void) {
 }
 
 void test_counter(void) {
+  CounterState state = DEFAULT_COUNTER_STATE;
   Clock clk;
   clock_init(&clk);
   for (int i = 0; i < 8; i++) {
     int bit = clock_tick(&clk);
-    CounterOutput output = count(bit, 1);
-    printf("%d,%d,%d,%d\n", output.q0, output.q1, output.q2, output.q3);
+    CounterOutput output = count(&state, bit, 1);
+    printf("Pass: %d,%d,%d,%d,%d\n", i, output.q0, output.q1, output.q2,
+           output.q3);
   }
 }
 

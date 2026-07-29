@@ -14,19 +14,19 @@ S | R | Qn | Qn_bar | State
 1 | 1 | Q  |   Q'   | Hold
 */
 
-LatchOutput SRLATCH(int s, int r) {
-  static int q = 0, q_bar = 1;
-  LatchOutput result;
+LatchState SRLATCH(LatchState *state, int s, int r) {
+  // static int q = 0, q_bar = 1;
+  LatchState result;
 
-  int next_q = NAND(s, q_bar);
+  int next_q = NAND(s, state->q_bar);
   int next_q_bar = NAND(r, next_q);
   next_q = NAND(s, next_q_bar);
   next_q_bar = NAND(r, next_q);
 
-  q = next_q;
-  q_bar = next_q_bar;
+  state->q = next_q;
+  state->q_bar = next_q_bar;
 
-  result.Qn = q;
-  result.Qn_1 = q_bar;
+  result.q = state->q;
+  result.q_bar = state->q_bar;
   return result;
 }

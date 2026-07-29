@@ -2,10 +2,12 @@
 #define LATCHS
 
 typedef struct {
-  int Qn;
-  int Qn_1;
-} LatchOutput;
+  int q;
+  int q_bar;
+} LatchState;
 
-LatchOutput SRLATCH(int s, int r);
+#define DEFAULT_LATCHS_STATE {.q = 0, .q_bar = 1}
+
+LatchState SRLATCH(LatchState *state, int s, int r);
 
 #endif
