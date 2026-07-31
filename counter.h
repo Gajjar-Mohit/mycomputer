@@ -15,10 +15,16 @@ typedef struct {
 } CounterState;
 
 #define DEFAULT_COUNTER_STATE                                                  \
-  {                                                                            \
-    .ff0 = DEFAULT_FF_STATE, .ff1 = DEFAULT_FF_STATE, .ff2 = DEFAULT_FF_STATE, \
-    .ff3 = DEFAULT_FF_STATE                                                    \
-  }
+  {.ff0 = DEFAULT_FF_STATE,                                                    \
+   .ff1 = DEFAULT_FF_STATE,                                                    \
+   .ff2 = DEFAULT_FF_STATE,                                                    \
+   .ff3 = DEFAULT_FF_STATE}
+
+#define DEFAULT_MS_COUNTER_STATE                                                  \
+  {.ff0 = DEFAULT_MS_FF_STATE,                                                    \
+   .ff1 = DEFAULT_MS_FF_STATE,                                                    \
+   .ff2 = DEFAULT_MS_FF_STATE,                                                    \
+   .ff3 = DEFAULT_MS_FF_STATE}
 
 CounterOutput count(CounterState *counter_state, int bit, int high);
 

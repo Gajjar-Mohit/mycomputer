@@ -15,8 +15,6 @@ CLK | S | R |   Qn+1  | State
  1  | 1 | 1 | Invalid | Hold
 */
 
-
-
 FlipFlopOutput SRFLIPFLOP(FlipFlopState *ff, int s, int r, int clk) {
   FlipFlopOutput result;
   LatchState latch;
@@ -25,7 +23,7 @@ FlipFlopOutput SRFLIPFLOP(FlipFlopState *ff, int s, int r, int clk) {
   temp2 = NAND(r, clk);
   latch = SRLATCH(&ff->latch_state, temp1, temp2);
   result.Qn = latch.q;
-  result.Qn_1 = latch.q_bar;
+  result.Qn_bar = latch.q_bar;
   return result;
 }
 
@@ -52,6 +50,24 @@ FlipFlopOutput JKFLIPFLOP(FlipFlopState *ff, int j, int k, int clk) {
   LatchState latch = SRLATCH(&ff->latch_state, s_prime, r_prime);
 
   result.Qn = latch.q;
-  result.Qn_1 = latch.q_bar;
+  result.Qn_bar = latch.q_bar;
+  return result;
+}
+
+FlipFlopOutput MASTERSLAVEFLIOPFLOP(MasterSlaceFlipFlopState *ff, int s, int r,
+                                    int clk) {
+  FlipFlopOutput result;
+  FlipFlopOutput fstSrFF;
+
+  fstSrFF = JKFLIPFLOP(&ff->master, s, r, clk);
+  result = JKFLIPFLOP(&ff->slave, fstSrFF.Qn, fstSrFF.Qn_bar, NOT(clk));
+  return result;
+}
+
+FlipFlopOutput DFLIPFLOP(FlipFlopState *ff, int d, int clk) {
+  FlipFlopOutput result;
+
+  result = SRFLIPFLOP(ff, d, NOT(d), clk);
+
   return result;
 }

@@ -243,26 +243,27 @@ void test_flipflops(void) {
   FlipFlopState sr_ff = {.latch_state = {0, 1}};
   FlipFlopOutput ff_out = SRFLIPFLOP(&sr_ff, 1, 0, 0);
   printf("  0  | 1 | 0 |  %d |   %d    | Clock Off (Holds state)\n", ff_out.Qn,
-         ff_out.Qn_1);
+         ff_out.Qn_bar);
 
   ff_out = SRFLIPFLOP(&sr_ff, 1, 0, 1);
-  printf("  1  | 1 | 0 |  %d |   %d    | Set (Q=1)\n", ff_out.Qn, ff_out.Qn_1);
+  printf("  1  | 1 | 0 |  %d |   %d    | Set (Q=1)\n", ff_out.Qn,
+         ff_out.Qn_bar);
 
   ff_out = SRFLIPFLOP(&sr_ff, 0, 0, 1);
   printf("  1  | 0 | 0 |  %d |   %d    | Hold (Retains Q=1)\n", ff_out.Qn,
-         ff_out.Qn_1);
+         ff_out.Qn_bar);
 
   ff_out = SRFLIPFLOP(&sr_ff, 0, 1, 1);
   printf("  1  | 0 | 1 |  %d |   %d    | Reset (Q=0)\n", ff_out.Qn,
-         ff_out.Qn_1);
+         ff_out.Qn_bar);
 
   ff_out = SRFLIPFLOP(&sr_ff, 0, 0, 1);
   printf("  1  | 0 | 0 |  %d |   %d    | Hold (Retains Q=0)\n", ff_out.Qn,
-         ff_out.Qn_1);
+         ff_out.Qn_bar);
 
   ff_out = SRFLIPFLOP(&sr_ff, 1, 1, 1);
   printf("  1  | 1 | 1 |  %d |   %d    | Invalid (Forbidden)\n", ff_out.Qn,
-         ff_out.Qn_1);
+         ff_out.Qn_bar);
 
   printf("\n");
 
@@ -272,20 +273,54 @@ void test_flipflops(void) {
 
   FlipFlopState jk_ff = {.latch_state = {0, 1}};
   FlipFlopOutput jk_out = JKFLIPFLOP(&jk_ff, 1, 0, 0);
-  printf("  0  | 1 | 0 |  %d |   %d    | Clock Off\n", jk_out.Qn, jk_out.Qn_1);
+  printf("  0  | 1 | 0 |  %d |   %d    | Clock Off\n", jk_out.Qn,
+         jk_out.Qn_bar);
 
   jk_out = JKFLIPFLOP(&jk_ff, 0, 0, 1);
-  printf("  1  | 0 | 0 |  %d |   %d    | Hold\n", jk_out.Qn, jk_out.Qn_1);
+  printf("  1  | 0 | 0 |  %d |   %d    | Hold\n", jk_out.Qn, jk_out.Qn_bar);
 
   jk_out = JKFLIPFLOP(&jk_ff, 1, 0, 1);
-  printf("  1  | 1 | 0 |  %d |   %d    | Set (Q=1)\n", jk_out.Qn, jk_out.Qn_1);
+  printf("  1  | 1 | 0 |  %d |   %d    | Set (Q=1)\n", jk_out.Qn,
+         jk_out.Qn_bar);
 
   jk_out = JKFLIPFLOP(&jk_ff, 0, 1, 1);
   printf("  1  | 0 | 1 |  %d |   %d    | Reset (Q=0)\n", jk_out.Qn,
-         jk_out.Qn_1);
+         jk_out.Qn_bar);
 
   jk_out = JKFLIPFLOP(&jk_ff, 1, 1, 1);
-  printf("  1  | 1 | 1 |  %d |   %d    | Toggle\n", jk_out.Qn, jk_out.Qn_1);
+  printf("  1  | 1 | 1 |  %d |   %d    | Toggle\n", jk_out.Qn, jk_out.Qn_bar);
+
+  printf("\n");
+
+  printf("--- D FLIP-FLOP ---\n");
+  printf(" CLK | D | Qn | Qn_bar | State Description\n");
+  printf("-----+---+----+--------+-------------------\n");
+
+  FlipFlopState d_ff = {.latch_state = {0, 1}};
+  FlipFlopOutput d_out = DFLIPFLOP(&d_ff, 1, 0);
+  printf("  0  | 1 |  %d |   %d    | Clock Off (Holds state)\n", d_out.Qn,
+         d_out.Qn_bar);
+
+  d_out = DFLIPFLOP(&d_ff, 1, 1);
+  printf("  1  | 1 |  %d |   %d    | Set (Q=1)\n", d_out.Qn, d_out.Qn_bar);
+
+  d_out = DFLIPFLOP(&d_ff, 0, 1);
+  printf("  1  | 0 |  %d |   %d    | Reset (Q=0)\n", d_out.Qn, d_out.Qn_bar);
+
+  printf("\n");
+
+  printf("--- MASTER-SLAVE FLIP-FLOP ---\n");
+  printf(" CLK | S | R | Qn | Qn_bar | State Description\n");
+  printf("-----+---+---+----+--------+-------------------\n");
+
+  MasterSlaceFlipFlopState ms_ff = DEFAULT_MS_FF_STATE;
+  FlipFlopOutput ms_out = MASTERSLAVEFLIOPFLOP(&ms_ff, 1, 0, 1);
+  printf("  1  | 1 | 0 |  %d |   %d    | Master capture (CLK=1)\n", ms_out.Qn,
+         ms_out.Qn_bar);
+
+  ms_out = MASTERSLAVEFLIOPFLOP(&ms_ff, 1, 0, 0);
+  printf("  0  | 1 | 0 |  %d |   %d    | Falling Edge (CLK=0, updates Q)\n",
+         ms_out.Qn, ms_out.Qn_bar);
 
   printf("\n");
 }
